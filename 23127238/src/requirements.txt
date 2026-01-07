@@ -1,0 +1,4 @@
+bibtexparser
+rapidfuzz
+python-Levenshtein
+sentence-transformers
