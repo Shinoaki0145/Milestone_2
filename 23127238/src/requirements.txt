@@ -2,3 +2,7 @@ bibtexparser
 rapidfuzz
 python-Levenshtein
 sentence-transformers
+scikit-learn
+numpy
+pandas
+nltk
