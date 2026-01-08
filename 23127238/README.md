@@ -24,24 +24,6 @@ Install the required packages using `requirements.txt` (recommended):
 pip install -r requirements.txt
 ```
 
-Or install packages individually:
-
-```bash
-pip install bibtexparser rapidfuzz python-Levenshtein sentence-transformers scikit-learn numpy pandas nltk
-```
-
-Or using conda:
-
-```bash
-conda install -c conda-forge bibtexparser rapidfuzz python-Levenshtein sentence-transformers scikit-learn numpy pandas nltk
-```
-
-Or run cell install in the Jupyter notebook:
-```bash
-
-!pip install bibtexparser rapidfuzz python-Levenshtein sentence-transformers scikit-learn numpy pandas nltk
-```
-
 ## Project Structure
 
 After running the notebook, you'll have the following files:
@@ -49,20 +31,20 @@ After running the notebook, you'll have the following files:
 ```
 23127238/
   ├── src/
-    │    ├── paper_processing.ipynb      # Normalize LaTeX, export hierarchy & refs
-    │    ├── data_labelling.ipynb        # Auto-label BibTeX → arXiv ID
-    │    └── reference_matching.ipynb    # Train/evaluate, generate predictions
+  │    ├── paper_processing.ipynb      # Normalize LaTeX, export hierarchy & refs
+  │    ├── data_labelling.ipynb        # Auto-label BibTeX → arXiv ID
+  │    └── reference_matching.ipynb    # Train/evaluate, generate predictions
   ├── labels/
   │    ├── manual_label.json            # Handmade labels (available)
   │    └── auto_label.json              # Labels automatically generated from data_labelling
   └── 23127238_output/                  # Processed outputs
-	├── 2304-14607/
-    │    ├── metadata.json           # Copied from crawler input
-    │    ├── references.json         # Copied from crawler input
-    │    ├── hierarchy.json          # Content hierarchy tree
-    │    ├── refs.bib                # Deduplicated & cleaned BibTeX (if LaTeX parse succeeds)
-    │    └── pred.json               # Matching predictions (step 3, if labeled)
-    └── ...                          # One folder per paper
+	   ├── 2304-14607/
+       │    ├── metadata.json           # Copied from crawler input
+       │    ├── references.json         # Copied from crawler input
+       │    ├── hierarchy.json          # Content hierarchy tree
+       │    ├── refs.bib                # Deduplicated & cleaned BibTeX (if LaTeX parse succeeds)
+       │    └── pred.json               # Matching predictions (step 3, if labeled)
+       └── ...                          # One folder per paper
 ```
 
 > Expected input: each arXiv paper folder `YYMM-NNNNN/` containing `metadata.json`, `references.json`, and `tex/YYMM-NNNNNvN/` (LaTeX sources extracted by the crawler).
@@ -76,22 +58,22 @@ After running the notebook, you'll have the following files:
 ## Workflow
 
 1) **Normalize LaTeX & extract references** — open [src/paper_processing.ipynb](src/paper_processing.ipynb):
-        - Set `FOLDER` to the input folder and `OUTPUT_FOLDER` (default `<FOLDER>_output`).
-        - Two built-in modes:
-                - *For one paper*: uncomment the sample block, set `FOLDER = ".../YYMM-NNNNN"`, run the related cells.
-                - *For all papers*: keep the final block, set parent `FOLDER` and `OUTPUT_FOLDER`, run the notebook end-to-end.
-        - The notebook locates the main `.tex`, builds the hierarchy, merges references, writes `hierarchy.json`/`refs.bib`, and copies `metadata.json`/`references.json` into the output folder.
-        - Tune parallelism via `max_workers` in `process_all()` (default 4).
+    - Set `FOLDER` to the input folder and `OUTPUT_FOLDER` (default `<FOLDER>_output`).
+    - Two built-in modes:
+            - *For one paper*: uncomment the sample block, set `FOLDER = ".../YYMM-NNNNN"`, run the related cells.
+            - *For all papers*: keep the final block, set parent `FOLDER` and `OUTPUT_FOLDER`, run the notebook end-to-end.
+    - The notebook locates the main `.tex`, builds the hierarchy, merges references, writes `hierarchy.json`/`refs.bib`, and copies `metadata.json`/`references.json` into the output folder.
+    - Tune parallelism via `max_workers` in `process_all()` (default 4).
 
 2) **Auto-label BibTeX → arXiv** — open [src/data_labelling.ipynb](src/data_labelling.ipynb):
-        - Set `base_dir` (e.g., `23127238_output`), `start_folder`, `papers_to_check`.
-        - `papers_to_check` is the maximum number of papers to auto-label; increase/decrease to control label coverage.
-        - Run the notebook; outputs to [labels/auto_label.json](labels/auto_label.json). Logs show skipped papers missing `references.json` or `.bib`.
+    - Set `base_dir` (e.g., `23127238_output`), `start_folder`, `papers_to_check`.
+    - `papers_to_check` is the maximum number of papers to auto-label; increase/decrease to control label coverage.
+    - Run the notebook; outputs to [labels/auto_label.json](labels/auto_label.json). Logs show skipped papers missing `references.json` or `.bib`.
 
 3) **Train & evaluate matching** — open [src/reference_matching.ipynb](src/reference_matching.ipynb):
-        - Set `OUTPUT_DIR` to the results folder; ensure [labels/manual_label.json](labels/manual_label.json) and [labels/auto_label.json](labels/auto_label.json) exist.
-        - The notebook loads BibTeX and `references.json`, creates train/val/test splits from labels, generates features, scales data, trains RF/GB/LR, selects the best model (train accuracy), and computes MRR on test.
-        - Each labeled paper gets a `pred.json` (top-k candidates + ground truth) in its folder within `OUTPUT_DIR`.
+    - Set `OUTPUT_DIR` to the results folder; ensure [labels/manual_label.json](labels/manual_label.json) and [labels/auto_label.json](labels/auto_label.json) exist.
+    - The notebook loads BibTeX and `references.json`, creates train/val/test splits from labels, generates features, scales data, trains RF/GB/LR, selects the best model (train accuracy), and computes MRR on test.
+    - Each labeled paper gets a `pred.json` (top-k candidates + ground truth) in its folder within `OUTPUT_DIR`.
 
 ## Example Usage
 
@@ -112,7 +94,7 @@ paper = batch_processor.process_paper(Path(FOLDER))
 Keep the “For all papers” block and set:
 
 ```python
-FOLDER = "23127238"              # folder containing many YYMM-NNNNN songs
+FOLDER = "23127238"    # folder containing many YYMM-NNNNN songs
 OUTPUT_FOLDER = "23127238_output"
 
 batch_processor = BatchProcessor(FOLDER, OUTPUT_FOLDER)
@@ -135,9 +117,9 @@ In [src/reference_matching.ipynb](src/reference_matching.ipynb), once labels and
 ```python
 OUTPUT_DIR = Path("23127238_output")
 predictions = generate_predictions(best_model, scaler,
-																	 all_bibtex[paper_id], all_references[paper_id],
-																	 top_k=5)
-```
+			all_bibtex[paper_id], all_references[paper_id],
+			top_k=5)
+``` 
 
 ## Data File Formats
 
