@@ -116,9 +116,8 @@ In [src/reference_matching.ipynb](src/reference_matching.ipynb), once labels and
 
 ```python
 OUTPUT_DIR = Path("23127238_output")
-predictions = generate_predictions(best_model, scaler,
-			all_bibtex[paper_id], all_references[paper_id],
-			top_k=5)
+predictions = generate_predictions(best_model, scaler, all_bibtex[paper_id],
+			                              all_references[paper_id], top_k=5)
 ``` 
 
 ## Data File Formats
@@ -248,12 +247,3 @@ predictions = generate_predictions(best_model, scaler,
     }
 }
 ```
-
-## Troubleshooting
-
-- Missing `refs.bib`: verify the `tex/` folder has a main `.tex` and BibTeX; if the parser can’t find the main file or no BibTeX entries exist, the output will lack `refs.bib`.
-- Missing `pred.json`: generated only for labeled papers (manual or auto). Check [labels/auto_label.json](labels/auto_label.json) and [labels/manual_label.json](labels/manual_label.json).
-- Missing [labels/auto_label.json](labels/auto_label.json): increase `papers_to_check` or adjust `start_folder` in [src/data_labelling.ipynb](src/data_labelling.ipynb).
-- `sentence-transformers` requires Torch: install `pip install torch --extra-index-url https://download.pytorch.org/whl/cpu` (or GPU variant).
-- NLTK tokenizer missing `punkt`: run `python -c "import nltk; nltk.download('punkt')"`.
-- Out-of-memory on large batches: reduce `max_workers` in `process_all()` or split the input folder.
